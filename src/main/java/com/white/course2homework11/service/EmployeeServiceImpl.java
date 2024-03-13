@@ -5,12 +5,15 @@ import com.white.course2homework11.entitys.Employee;
 import com.white.course2homework11.enums.Department;
 import com.white.course2homework11.exceptions.ArrayIsFull;
 import com.white.course2homework11.exceptions.EmployeeAlreadyAdded;
+import com.white.course2homework11.exceptions.IncorrectEmployeeData;
 import com.white.course2homework11.repository.EmployeeRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static org.apache.commons.lang3.StringUtils.capitalize;
+import static org.apache.commons.lang3.StringUtils.isAlpha;
 
 
 @Service
@@ -22,7 +25,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee add(String name, String surName, String patronymic, Department department, double salary) {
-        Employee employee = new Employee(name, surName, patronymic, department, salary);
+        if (!isAlpha(name) || !isAlpha(surName) || !isAlpha(patronymic)) throw new IncorrectEmployeeData();
+        Employee employee = new Employee(capitalize(name), capitalize(surName), capitalize(patronymic), department, salary);
         if (!repository.isNotFullDb()) throw new ArrayIsFull();
         if (repository.contains(employee)) throw new EmployeeAlreadyAdded();
         repository.add(employee);
